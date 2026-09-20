@@ -34,4 +34,10 @@ class VenueRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () -> venueRepository.saveAndFlush(
                 new Venue("VEN-INVALID-01", "Invalid", "Cali", "Street 3", 0, true, List.of())));
     }
+
+    @Test
+    void shouldRejectNegativeCapacity() {
+        assertThrows(DataIntegrityViolationException.class, () -> venueRepository.saveAndFlush(
+                new Venue("VEN-NEGATIVE-01", "Invalid", "Cali", "Street 3", -1, true, List.of())));
+    }
 }
