@@ -1,7 +1,7 @@
 package com.pulsepass.pulsepass.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,18 +10,20 @@ import com.pulsepass.pulsepass.domain.Ticket;
 import com.pulsepass.pulsepass.domain.TicketStatus;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    List<Ticket> findByStatus(TicketStatus status);
+    List<Ticket> findByUserEmailIgnoreCase(String email);
 
-    List<Ticket> findByEventId(Long eventId);
+    List<Ticket> findByUserEmailIgnoreCaseAndStatus(String email, TicketStatus status);
 
-    List<Ticket> findByUserId(Long userId);
+    List<Ticket> findByEventEventCodeAndStatus(String eventCode, TicketStatus status);
+
+    List<Ticket> findByEventEventDateAfterOrderByEventEventDateAsc(LocalDateTime date);
 
         @Query("""
-        SELECT SUM(t.price)
+        SELECT COUNT(t)
         FROM Ticket t
-        WHERE t.event.id = :eventId
+        WHERE t.event.eventCode = :eventCode
         AND t.status = com.pulsepass.pulsepass.domain.TicketStatus.PAID
     """)
-    BigDecimal calculateEventRevenue(Long eventId);
+    long countPaidTicketsByEventCode(String eventCode);
 
 }
