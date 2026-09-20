@@ -46,4 +46,35 @@ public class Ticket {
     )
     private Event event;
 
+    public Ticket() {
+    }
+
+    public Ticket(String ticketCode, TicketType type, BigDecimal price, TicketStatus status,
+                  LocalDateTime purchaseDate, User user, Event event) {
+        this.ticketCode = ticketCode;
+        this.type = type;
+        this.price = price;
+        this.status = status;
+        this.purchaseDate = purchaseDate;
+        this.user = user;
+        this.event = event;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTicketCode() { return ticketCode; }
+    public void setTicketCode(String ticketCode) { this.ticketCode = ticketCode; }
+    public TicketType getType() { return type; }
+    public void setType(TicketType type) { this.type = type; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+    public TicketStatus getStatus() { return status; }
+    public void setStatus(TicketStatus status) { this.status = status; }
+    public LocalDateTime getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
+
 }
