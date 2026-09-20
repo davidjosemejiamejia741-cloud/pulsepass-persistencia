@@ -42,4 +42,20 @@ class UserRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () -> userProfileRepository.saveAndFlush(
                 new UserProfile("Second", "Profile", null, null, null, user)));
     }
+
+    @Test
+    void shouldRejectDuplicatedUsername() {
+        userRepository.saveAndFlush(new User("duplicated-user", "first@example.com", true, null, List.of()));
+
+        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(
+                new User("duplicated-user", "second@example.com", true, null, List.of())));
+    }
+
+    @Test
+    void shouldRejectDuplicatedEmail() {
+        userRepository.saveAndFlush(new User("first-user", "duplicated@example.com", true, null, List.of()));
+
+        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(
+                new User("second-user", "duplicated@example.com", true, null, List.of())));
+    }
 }
