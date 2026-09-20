@@ -1,3 +1,4 @@
+//src/test/java/com/pulsepass/pulsepass/TestcontainersConfiguration.java
 package com.pulsepass.pulsepass;
 
 import org.springframework.boot.test.context.TestConfiguration;
@@ -12,7 +13,7 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	PostgreSQLContainer postgresContainer() {
-		return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
+		return new PostgreSQLContainer(DockerImageName.parse("postgres:18-alpine"));
 	}
 
 }
