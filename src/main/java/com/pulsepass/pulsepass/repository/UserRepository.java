@@ -1,15 +1,17 @@
 package com.pulsepass.pulsepass.repository;
 
-import java.util.Optional;
-
+import com.pulsepass.pulsepass.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.pulsepass.pulsepass.domain.User;
+import java.util.Optional;
 
-public interface UserRepository  extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByUsername(String username);
 
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByUsername(String username);
 }
