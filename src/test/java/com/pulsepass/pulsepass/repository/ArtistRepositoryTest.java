@@ -30,7 +30,7 @@ class ArtistRepositoryTest {
     void shouldFindArtistByStageName() {
 
         Optional<Artist> result =
-                artistRepository.findByStageName("Solar Beat");
+                artistRepository.findByStageNameIgnoreCase("Solar Beat");
 
 
         assertTrue(result.isPresent());

@@ -56,7 +56,8 @@ class TicketRepositoryTest {
         assertEquals(List.of(paid.getId()), ticketRepository.findByUserEmailIgnoreCaseAndStatus("andrea@example.com", TicketStatus.PAID)
                 .stream().map(Ticket::getId).toList());
         assertEquals(1, ticketRepository.findByEventEventCodeAndStatus("EVT-TKT-01", TicketStatus.PAID).size());
-        assertEquals(1, ticketRepository.countPaidTicketsByEventCode("EVT-TKT-01"));
+        assertEquals(1,ticketRepository.countByEventEventCodeAndStatus("EVT-TKT-01",TicketStatus.PAID)
+);
         assertTrue(ticketRepository.findByEventEventDateAfterOrderByEventEventDateAsc(eventDate.minusDays(1))
                 .stream().anyMatch(found -> found.getId().equals(paid.getId())));
     }

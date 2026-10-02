@@ -40,4 +40,50 @@ class VenueRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () -> venueRepository.saveAndFlush(
                 new Venue("VEN-NEGATIVE-01", "Invalid", "Cali", "Street 3", -1, true, List.of())));
     }
+
+    @Test
+    void shouldFindOnlyActiveVenuesOrderedByName() {
+    venueRepository.saveAndFlush(
+            new Venue(
+                    "VEN-ACTIVE-02",
+                    "Zulu Arena",
+                    "Santa Marta",
+                    "Street 1",
+                    3000,
+                    true,
+                    List.of()
+            )
+    );
+
+    venueRepository.saveAndFlush(
+            new Venue(
+                    "VEN-INACTIVE-01",
+                    "Inactive Arena",
+                    "Santa Marta",
+                    "Street 2",
+                    3000,
+                    false,
+                    List.of()
+            )
+    );
+
+    venueRepository.saveAndFlush(
+            new Venue(
+                    "VEN-ACTIVE-01",
+                    "Alpha Arena",
+                    "Santa Marta",
+                    "Street 3",
+                    3000,
+                    true,
+                    List.of()
+            )
+    );
+
+    List<Venue> venues =
+            venueRepository.findByActiveTrueOrderByNameAsc();
+
+    assertEquals(2, venues.size());
+    assertEquals("Alpha Arena", venues.get(0).getName());
+    assertEquals("Zulu Arena", venues.get(1).getName());
+}
 }
