@@ -14,6 +14,8 @@ import com.pulsepass.pulsepass.domain.EventStatus;
 public interface EventRepository extends JpaRepository<Event, Long>{
     Optional<Event> findByEventCode(String eventCode);
 
+    boolean existsByEventCode(String eventCode);
+
     List<Event> findByStatusOrderByEventDateAsc(EventStatus status);
 
     List<Event> findByVenueCode(String code);
