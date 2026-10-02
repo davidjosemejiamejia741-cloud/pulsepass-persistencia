@@ -1,0 +1,26 @@
+package com.pulsepass.pulsepass.dto.response;
+
+import java.time.LocalDateTime;
+
+import com.pulsepass.pulsepass.domain.EventCategory;
+import com.pulsepass.pulsepass.domain.EventStatus;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+
+public record EventResponse(
+
+        Long id,
+        String eventCode,
+        String name,
+        String description,
+        EventCategory category,
+        EventStatus status,
+        LocalDateTime eventDate,
+        Integer minimumAge,
+        String venueCode,
+        String venueName,
+        Set<ArtistResponse> artists
+) {
+
+}
