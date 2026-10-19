@@ -4,18 +4,19 @@ spring:
     name: pulsepass
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/pulsepass}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pulsepass_e2e}
     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD:admin}
 
   jpa:
+
 
     open-in-view: false
 
     hibernate:
       ddl-auto: validate
 
-    show-sql: true
+    show-sql: false
 
     properties:
       "[hibernate.format_sql]": true
@@ -23,3 +24,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+pulsepass:
+  security:
+    jwt:
+      issuer: ${PULSEPASS_JWT_ISSUER:pulsepass-api}
+      secret-base64: ${PULSEPASS_JWT_SECRET_BASE64}
+      access-token-ttl: ${PULSEPASS_JWT_TTL:PT15M}
+    cors-origins: ${PULSEPASS_CORS_ORIGINS:}
+    require-https: ${PULSEPASS_REQUIRE_HTTPS:false}
