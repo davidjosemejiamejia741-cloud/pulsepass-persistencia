@@ -247,7 +247,7 @@ class UserServiceImplTest {
                         "Martinez",
                         "3001234567",
                         "Santa Marta",
-                        LocalDate.now().plusDays(1)
+                        LocalDate.now().plusDays(1), "TestPassword2026!"
                 );
 
         when(
@@ -290,7 +290,7 @@ class UserServiceImplTest {
                 "Martinez",
                 "3001234567",
                 "Santa Marta",
-                LocalDate.of(2000, 5, 15)
+                LocalDate.of(2000, 5, 15), "TestPassword2026!"
         );
     }
 }

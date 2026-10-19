@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@org.springframework.context.annotation.Import(com.pulsepass.pulsepass.security.MvcSecuritySupport.class)
+@org.springframework.security.test.context.support.WithMockUser(roles={"USER","STAFF","ADMIN"})
 @WebMvcTest(UserController.class)
 class UserControllerTest {
 
@@ -27,6 +29,7 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService service;
+    @MockitoBean private com.pulsepass.pulsepass.service.AuthService auth;
 
     private static final UserResponse USER = new UserResponse(
             1L,
@@ -47,7 +50,7 @@ class UserControllerTest {
               "firstName": "Andrea",
               "lastName": "Perez",
               "city": "Santa Marta",
-              "birthDate": "1990-01-01"
+              "birthDate": "1990-01-01", "password": "TestPassword2026!"
             }
             """;
 
@@ -59,7 +62,7 @@ class UserControllerTest {
                 "Perez",
                 null,
                 "Santa Marta",
-                LocalDate.of(1990, 1, 1)
+                LocalDate.of(1990, 1, 1), "TestPassword2026!"
         );
     }
 
@@ -67,7 +70,7 @@ class UserControllerTest {
     void registerUser() throws Exception {
         RegisterUserRequest request = validRequest();
 
-        when(service.register(request)).thenReturn(USER);
+        when(auth.register(request)).thenReturn(USER);
 
         mvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +82,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email").value("andrea@example.com"))
                 .andExpect(jsonPath("$.active").value(true));
 
-        verify(service).register(request);
+        verify(auth).register(request);
     }
 
     @Test
@@ -99,7 +102,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.details.lastName").isNotEmpty())
                 .andExpect(jsonPath("$.details.birthDate").isNotEmpty());
 
-        verify(service, never()).register(any());
+        verify(auth, never()).register(any());
         verifyNoInteractions(service);
     }
 
@@ -119,7 +122,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.details.email").value("Email must be valid"));
 
-        verify(service, never()).register(any());
+        verify(auth, never()).register(any());
         verifyNoInteractions(service);
     }
 
@@ -127,7 +130,7 @@ class UserControllerTest {
     void duplicateUsername() throws Exception {
         RegisterUserRequest request = validRequest();
 
-        when(service.register(request))
+        when(auth.register(request))
                 .thenThrow(new DuplicateResourceException(
                         "Username already exists: andrea"
                 ));
@@ -143,7 +146,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("Username already exists: andrea"))
                 .andExpect(jsonPath("$.details").isMap());
 
-        verify(service).register(request);
+        verify(auth).register(request);
     }
 
     @Test

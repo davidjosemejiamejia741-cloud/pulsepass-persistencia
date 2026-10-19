@@ -17,6 +17,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@org.springframework.context.annotation.Import(com.pulsepass.pulsepass.security.MvcSecuritySupport.class)
+@org.springframework.security.test.context.support.WithMockUser(roles={"USER","STAFF","ADMIN"})
 @WebMvcTest(VenueController.class)
 class VenueControllerTest {
 
