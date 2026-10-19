@@ -1,0 +1,3848 @@
+{
+  "info": {
+    "_exporter_id": "52734422",
+    "_postman_id": "ff06fdb7-0189-47b7-aa41-4ccc408b3dfb",
+    "description": "PulsePass — colección de pruebas HTTP end-to-end manuales (Postman Collection v2.1). Incluye las 22 rutas base (20 de negocio + POST /api/auth/login + GET /api/auth/me) y escenarios complementarios de seguridad, propiedad, validaciones y flujos integrados.\n\nEjecución obligatoria: enviar cada solicitud individualmente con Send. No utilizar Runner, Newman, CLI ni scripts Pre-request/Post-response/Tests. Las pestañas de scripts deben permanecer vacías.\n\nAntes de cada request protegido, comprobar manualmente el token de Authorization. Copiar accessToken y códigos de recursos entre variables localmente; no guardar ni exportar contraseñas o JWT.\n\nSecuencia recomendada: carpetas 00 a 09; asociar artista antes de publicar el evento; usar tickets diferentes para cada operación irreversible. Registrar HTTP esperado/observado, JSON, PASS/FAIL/BLOCKED y observaciones en registro-ejecucion-manual.md. No marcar como PASS lo no ejecutado.",
+    "name": "PulsePass - E2E Manual",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "name": "TC-PREP-01 — Verificar conectividad con API (ANONYMOUS)",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "StartFragment\n\nID: TC-PREP-01\n\nObjetivo: Comprobar que PulsePass responde antes de ejecutar las pruebas E2E.\n\nPrecondiciones: PulsePass está ejecutándose, el ambiente PulsePass-local está seleccionado y existe al menos un venue activo en la base pulsepass_e2e.\n\nActor: ANONYMOUS\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/venues/active y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta es un JSON válido que contiene venues activos. Anotar el código real de uno de ellos en la variable venueActiveCode.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 00.\n\nEndFragment",
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "venues",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/venues/active"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "00 Preparación / conectividad"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-E2E-01 — Consultar venues activos (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-01\n\nObjetivo: Consultar la lista de venues activos de PulsePass.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado y existe al menos un venue activo en la base de datos pulsepass_e2e.\n\nActor: ANONYMOUS\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/venues/active y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta es un JSON válido que contiene los venues activos. Verificar que cada registro incluya los campos esperados, como id, code, name y active. Confirmar que el venue E2E-LOCAL-001 aparezca con active=true.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 01 Venues.",
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "venues",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/venues/active"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-02 — Consultar venue por código (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-02\n\nObjetivo: Consultar un venue activo por su código.\n\nPrecondiciones: API disponible y venueActiveCode corresponde a un venue activo existente.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/venues/{{venueActiveCode}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar JSON válido, código coincidente e información del venue consistente con TC-E2E-01. No deben exponerse campos internos.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 01 Venues.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "venues",
+                "{{venueActiveCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/venues/{{venueActiveCode}}"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "01 Venues"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-E2E-03 — Listar artistas activos (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-03\n\nObjetivo: Consultar la lista de artistas activos de PulsePass.\n\nPrecondiciones: La API está iniciada y el ambiente PulsePass-local está seleccionado.\n\nActor: ANONYMOUS\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/artists/active y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido con la lista de artistas activos. Identificar un artista y anotar su id y stageName reales en las variables artistId y artistStageName del ambiente.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 02 Artists.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "artists",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/artists/active"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-04 — Consultar artista por ID (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-04\n\nObjetivo: Consultar un artista por su identificador.\n\nPrecondiciones: artistId identifica un artista existente; preferiblemente activo.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/artists/{{artistId}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que id y stageName coinciden con el artista seleccionado en TC-E2E-03 y que la respuesta es JSON válido.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 02 Artists.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "artists",
+                "{{artistId}}"
+              ],
+              "raw": "{{baseUrl}}/api/artists/{{artistId}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-05 — Consultar artista por nombre artístico (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-05\n\nObjetivo: Consultar un artista específico mediante su nombre artístico.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado y existe un artista con el nombre artístico almacenado en artistStageName.\n\nActor: ANONYMOUS\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/artists/by-stage-name?stageName={stageName}, sustituyendo {stageName} por el valor de artistStageName.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido y que el id y stageName coincidan con el artista esperado: id 1 y Solar Beat. Verificar que active sea true.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 02 Artists.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "artists",
+                "by-stage-name"
+              ],
+              "query": [
+                {
+                  "key": "stageName",
+                  "value": "{{artistStageName}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/artists/by-stage-name?stageName={{artistStageName}}"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "02 Artists"
+    },
+    {
+      "description": "Preparación de cuentas para pruebas manuales.\n\nUSER_A y USER_B: registrar mediante los requests de esta carpeta y copiar manualmente los JWT a las variables locales userAToken y userBToken.\n\nADMIN y STAFF: deben provisionarse mediante el mecanismo local de fixtures autorizado para el entorno E2E. No intentar conceder roles privilegiados mediante POST /api/users. Después de provisionarlos, usar los requests de login y verificación correspondientes. No exportar credenciales ni JWT.\n\nINACTIVEUSER: registrar como usuario normal, obtener su token mientras está activo y después desactivarlo mediante el fixture administrativo aprobado para ejecutar TC-AUTH-013.",
+      "item": [
+        {
+          "name": "TC-AUTH-001 / TC-E2E-06 — Registrar USER_A válido (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"username\": \"{{userAUsername}}\",\r\n  \"email\": \"{{userAEmail}}\",\r\n  \"password\": \"{{userAPassword}}\",\r\n  \"firstName\": \"Usuario\",\r\n  \"lastName\": \"Prueba A\",\r\n  \"city\": \"Santa Marta\",\r\n  \"birthDate\": \"1995-05-10\"\r\n}"
+            },
+            "description": "ID: TC-AUTH-001 / TC-E2E-06\n\nObjetivo: Registrar USER_A con datos válidos y confirmar que el rol inicial sea USER.\n\nPrecondiciones: La API está iniciada, PulsePass-local está seleccionado y userAUsername/userAEmail son únicos en la base E2E. userAPassword se completa solo en el valor local de Postman.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/users con el JSON de registro configurado y pulsar Send.\n\nHTTP esperado: 201 Created para una cuenta nueva.\n\nRevisión manual: Confirmar id, username y email; verificar que no se expongan password ni passwordHash y que el registro no otorgue roles privilegiados. Si la cuenta ya existe, registrar 409 y no afirmar que fue creada de nuevo.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 03 Auth / usuarios. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-002 / TC-E2E-07 — Login de USER_A por username",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"identifier\": \"{{userAUsername}}\",\r\n  \"password\": \"{{userAPassword}}\"\r\n}"
+            },
+            "description": "ID: TC-AUTH-002 / TC-E2E-07\n\nObjetivo: Iniciar sesión con USER_A mediante username y obtener un JWT válido.\n\nPrecondiciones: USER_A está registrado y activo; userAUsername y userAPassword están configurados localmente.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier={{userAUsername}} y password={{userAPassword}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar accessToken no vacío, tokenType=Bearer y expiresIn=900 (o el TTL configurado). Copiar manualmente accessToken a userAToken. No guardar el JWT en la colección ni en la bitácora.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-006 / TC-E2E-08 — Consultar /api/auth/me con USER_A",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-AUTH-006 / TC-E2E-08\n\nObjetivo: Consultar la identidad autenticada de USER_A con un JWT válido.\n\nPrecondiciones: USER_A está registrado y activo; userAToken contiene el JWT vigente obtenido en TC-AUTH-002.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/auth/me con el Bearer Token configurado.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta identifica a USER_A y no expone password, passwordHash ni otros secretos.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-004 — Login de USER_A con contraseña incorrecta",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"identifier\": \"{{userAUsername}}\",\n  \"password\": \"{{userAPassword}}-incorrecta\"\n}"
+            },
+            "description": "ID: TC-AUTH-004\n\nObjetivo: Confirmar que un password incorrecto no permite iniciar sesión y que el mensaje no revela si la cuenta existe.\n\nPrecondiciones: USER_A está registrado y activo; userAUsername y userAPassword contienen los valores locales correctos.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login. El cuerpo añade el sufijo -incorrecta a userAPassword para que la contraseña enviada sea deliberadamente distinta de la correcta.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar ErrorResponse uniforme, sin accessToken y sin enumeración de usuarios. No aceptar 200 ni 500.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-005 — Login con identificador inexistente",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"identifier\": \"e2e_no_existe_{{runId}}\",\n  \"password\": \"{{userAPassword}}\"\n}"
+            },
+            "description": "ID: TC-AUTH-005\n\nObjetivo: Confirmar que el login con un identificador inexistente devuelve el mismo tipo de denegación que una contraseña incorrecta.\n\nPrecondiciones: La API está disponible y runId tiene un valor de prueba. El identificador generado no corresponde a ninguna cuenta existente.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier=e2e_no_existe_{{runId}} y password={{userAPassword}}.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar ErrorResponse genérico, ausencia de accessToken y ausencia de detalles que permitan enumerar usuarios. No aceptar 200 ni 500.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-09 — Registrar USER_B (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"username\": \"{{userBUsername}}\",\r\n  \"email\": \"{{userBEmail}}\",\r\n  \"password\": \"{{userBPassword}}\",\r\n  \"firstName\": \"Usuario\",\r\n  \"lastName\": \"Prueba B\",\r\n  \"city\": \"Santa Marta\",\r\n  \"birthDate\": \"1995-05-10\"\r\n}"
+            },
+            "description": "ID: TC-E2E-09\n\nObjetivo: Registrar la cuenta de prueba USER_B en PulsePass para utilizarla en las pruebas de autorización y propiedad de recursos.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado y userBUsername y userBEmail son únicos en la base de datos pulsepass_e2e.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/users con el JSON de registro de USER_B, utilizando las variables userBUsername, userBEmail y userBPassword del ambiente.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Confirmar que la respuesta incluya el usuario creado, su id, username y email. Verificar que no exponga los campos password ni passwordHash.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-10 — Iniciar sesión USER_B (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"identifier\": \"{{userBUsername}}\",\r\n  \"password\": \"{{userBPassword}}\"\r\n}"
+            },
+            "description": "ID: TC-E2E-10\n\nObjetivo: Iniciar sesión con las credenciales de USER_B y obtener un token JWT.\n\nPrecondiciones: USER_B está registrado, activo y sus credenciales son válidas. El ambiente PulsePass-local está seleccionado.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier igual a userBUsername y password igual a userBPassword.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta incluya accessToken no vacío, tokenType igual a Bearer y expiresIn igual a 900 segundos, según la configuración esperada. No registrar el JWT completo en la bitácora.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-11 — Consultar usuario autenticado (USER_B)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-11\n\nObjetivo: Consultar la identidad del usuario autenticado mediante su token JWT.\n\nPrecondiciones: USER_B está registrado y activo, y se dispone de un token JWT vigente obtenido mediante TC-E2E-10.\n\nActor: USER_B.\n\nAutorización: Bearer JWT mediante userBToken.\n\nEjecución: Enviar GET /api/auth/me con el token vigente de USER_B en el encabezado Authorization.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta identifique a USER_B mediante su username y/o email. Verificar que el rol corresponda al usuario normal y que no se expongan password ni passwordHash.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 03 Auth / usuarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Iniciar sesión ADMIN",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"identifier\": \"{{adminIdentifier}}\",\r\n  \"password\": \"{{adminPassword}}\"\r\n}\r\n"
+            },
+            "description": "ID: PREP-ADMIN-LOGIN\n\nObjetivo: Obtener un JWT de ADMIN para las pruebas privilegiadas.\n\nPrecondiciones: Cuenta ADMIN creada por fixture local; adminIdentifier y adminPassword disponibles localmente.\n\nActor: ADMIN.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier={{adminIdentifier}} y password={{adminPassword}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar accessToken no vacío, tokenType Bearer y expiresIn conforme a configuración; copiar manualmente accessToken a adminToken.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Verificar identidad ADMIN",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-ADMIN-ME\n\nObjetivo: Confirmar que el JWT corresponde a una cuenta ADMIN.\n\nPrecondiciones: adminToken vigente copiado del login de ADMIN.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar GET /api/auth/me.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar identidad y rol privilegiado efectivo ADMIN, sin información sensible.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Iniciar sesión STAFF",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"identifier\": \"{{staffIdentifier}}\",\r\n  \"password\": \"{{staffPassword}}\"\r\n}\r\n"
+            },
+            "description": "ID: PREP-STAFF-LOGIN\n\nObjetivo: Obtener JWT de STAFF para los casos de control de acceso.\n\nPrecondiciones: Cuenta STAFF creada por fixture local; staffIdentifier y staffPassword disponibles localmente.\n\nActor: STAFF.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier={{staffIdentifier}} y password={{staffPassword}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar accessToken no vacío, tokenType Bearer y expiresIn esperado; copiar accessToken a staffToken.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Verificar identidad STAFF",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-STAFF-ME\n\nObjetivo: Confirmar que el JWT corresponde a una cuenta STAFF.\n\nPrecondiciones: staffToken vigente copiado del login STAFF.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar GET /api/auth/me.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar identidad y rol efectivo ROLE_STAFF.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Registrar INACTIVEUSER",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"username\": \"e2e_inactive_01\",\r\n  \"email\": \"e2e_inactive_01@example.test\",\r\n  \"password\": \"{{inactiveUserPassword}}\",\r\n  \"firstName\": \"Usuario\",\r\n  \"lastName\": \"Inactivo\",\r\n  \"city\": \"Santa Marta\",\r\n  \"birthDate\": \"1995-05-10\"\r\n}"
+            },
+            "description": "ID: PREP-INACTIVE-USER\n\nObjetivo: Crear un usuario ordinario que luego se desactivará para probar un token previo.\n\nPrecondiciones: Identidad inactiva única y credenciales locales; usuario creado por el registro normal antes de desactivarlo en el entorno E2E.\n\nActor: ANONYMOUS / responsable del entorno.\n\nAutorización: No Auth para el registro normal; la desactivación se hace mediante fixture o mecanismo administrativo aprobado..\n\nEjecución: Enviar POST /api/users con inactiveUserName, correo de prueba único, inactiveUserPassword y datos válidos. Después desactivar la cuenta por el mecanismo E2E disponible.\n\nHTTP esperado: 201 Created para el registro; la desactivación se verifica por separado..\n\nRevisión manual: Confirmar cuenta creada con rol USER y luego active=false en el fixture. No afirmar que la petición de registro la desactiva por sí sola.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — iniciar sesión INACTIVEUSER",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n  \"identifier\": \"{{inactiveUserName}}\",\r\n  \"password\": \"{{inactiveUserPassword}}\"\r\n}"
+            },
+            "description": "ID: PREP-INACTIVE-LOGIN\n\nObjetivo: Obtener el token previo que se usará en la prueba de usuario inactivo.\n\nPrecondiciones: Cuenta creada y todavía activa para el login; inactiveUserName e inactiveUserPassword configurados.\n\nActor: INACTIVEUSER.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier={{inactiveUserName}} y password={{inactiveUserPassword}} antes de desactivar la cuenta.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Copiar accessToken a inactiveUserToken. Luego desactivar la cuenta antes de ejecutar TC-AUTH-013.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Verificar identidad INACTIVEUSER",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{inactiveUserToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-INACTIVE-ME\n\nObjetivo: Verificar que el token de INACTIVEUSER funciona antes de desactivar la cuenta.\n\nPrecondiciones: inactiveUserToken recién obtenido y la cuenta aún activa.\n\nActor: INACTIVEUSER.\n\nAutorización: Bearer {{inactiveUserToken}}.\n\nEjecución: Enviar GET /api/auth/me antes de desactivar la cuenta.\n\nHTTP esperado: 200 OK antes de la desactivación.\n\nRevisión manual: Confirmar que el token identifica al usuario de prueba; después desactivar la cuenta y ejecutar TC-AUTH-013.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md. No incluir credenciales ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "03 Auth / usuarios"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-E2E-12 — Consultar USER_A por email propio",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-12\n\nObjetivo: Consultar los datos de USER_A mediante su propio email.\n\nPrecondiciones: USER_A está registrado y userAToken contiene un token JWT vigente.\n\nActor: USER_A.\n\nAutorización: Bearer JWT mediante userAToken.\n\nEjecución: Enviar GET /api/users/by-email?email={email}, utilizando el valor de userAEmail.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta corresponda a USER_A y que el email y username coincidan con los registrados. Verificar que no se expongan password ni passwordHash.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 04 Usuarios / consulta y propiedad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "by-email"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{userAEmail}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/users/by-email?email={{userAEmail}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-13 — Consultar USER_A por username propio",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-13\n\nObjetivo: Consultar los datos de USER_A mediante su propio username.\n\nPrecondiciones: USER_A está registrado y userAToken contiene un token JWT vigente.\n\nActor: USER_A.\n\nAutorización: Bearer JWT mediante userAToken.\n\nEjecución: Enviar GET /api/users/by-username?username={username}, utilizando el valor de userAUsername.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta corresponda a USER_A y que el username y email coincidan con los registrados. Verificar que no se expongan password ni passwordHash.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 04 Usuarios / consulta y propiedad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "by-username"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{userAUsername}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/users/by-username?username={{userAUsername}}"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "04 Usuarios / consulta y propiedad (2 rutas)"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-E2E-14 — Crear evento (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"eventCode\": \"{{newEventCode}}\",\r\n  \"name\": \"PulsePass E2E {{runId}}\",\r\n  \"description\": \"Evento de prueba manual\",\r\n  \"category\": \"MUSIC\",\r\n  \"eventDate\": \"2027-02-15T19:00:00\",\r\n  \"minimumAge\": 0,\r\n  \"venueCode\": \"{{venueActiveCode}}\"\r\n}\r\n"
+            },
+            "description": "ID: TC-E2E-14\n\nObjetivo: Crear un evento válido en PulsePass utilizando una cuenta con rol ADMIN.\n\nPrecondiciones: API iniciada, ambiente PulsePass-local seleccionado, venue activo disponible, código de evento único y JWT vigente de ADMIN.\n\nActor: ADMIN.\n\nAutorización: Bearer JWT mediante adminToken.\n\nEjecución: Enviar POST /api/events con un JSON válido que incluya eventCode, name, description, category, eventDate, minimumAge y venueCode.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido, que el código coincida con newEventCode, que el estado inicial sea DRAFT y que el venue corresponda al configurado. Verificar los campos del DTO y que no se expongan datos sensibles.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-15 — Consultar evento por código (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-15\n\nObjetivo: Consultar un evento existente mediante su código y verificar que sus datos y estado coincidan con los registrados durante su creación.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, el evento E2E-EVENT-20261018-01 fue creado mediante TC-E2E-14 y existe un JWT vigente de ADMIN.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar GET /api/events/{{newEventCode}} y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido y corresponda al evento creado, con id=2, eventCode=E2E-EVENT-20261018-01, status=DRAFT, category=MUSIC y venueCode=E2E-LOCAL-001. Verificar que los demás campos coincidan con los registrados durante la creación y que no se expongan datos sensibles.\n\nEvidencia: Registrar el HTTP observado, el resultado y cualquier observación en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-16 — Listar eventos publicados (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-E2E-16\n\nObjetivo: Consultar los eventos publicados de PulsePass y comprobar que los eventos en estado DRAFT no sean visibles públicamente.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado y existe al menos un evento publicado. El evento E2E-SEC-DRAFT-20261018-01 se utiliza para verificar que los borradores no se expongan.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/events/published y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido que contenga únicamente eventos publicados. Verificar que E2E-SEC-DRAFT-20261018-01 no aparezca mientras permanezca en estado DRAFT. Una lista vacía es válida si no existen eventos publicados.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "published"
+              ],
+              "raw": "{{baseUrl}}/api/events/published"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-18 — Asociar artista al evento (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-18\n\nObjetivo: Asociar un artista existente al evento recién creado y verificar la relación antes de publicar el evento.\n\nPrecondiciones: newEventCode identifica el evento creado por TC-E2E-14 en estado DRAFT; artistId identifica un artista activo; adminToken es vigente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events/{{newEventCode}}/artists/{{artistId}}. Ejecutar este paso antes de TC-E2E-17 — Publicar evento.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el evento corresponda a newEventCode, que Solar Beat (artistId=1) quede asociado y que el evento continúe en DRAFT.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "artists",
+                "{{artistId}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/artists/{{artistId}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-17 — Publicar evento (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-17\n\nObjetivo: Publicar el evento creado y con artista asociado, cambiando su estado de DRAFT a PUBLISHED.\n\nPrecondiciones: newEventCode identifica un evento en estado DRAFT y TC-E2E-18 confirmó que Solar Beat está asociado; adminToken es vigente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Después de TC-E2E-18, enviar PATCH /api/events/{{newEventCode}}/publish.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar status=PUBLISHED, que el artista permanezca asociado y que el evento aparezca en GET /api/events/published.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "publish"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/publish"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-19 — Consultar eventos por artista (ANONYMOUS)",
+          "request": {
+            "description": "ID: TC-E2E-19\n\nObjetivo: Consultar los eventos asociados al nombre artístico y validar visibilidad pública.\n\nPrecondiciones: artistStageName corresponde a un artista existente y hay un evento publicado asociado.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/events/by-artist?stageName={{artistStageName}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar JSON válido y que solo aparezcan eventos publicados; los eventos DRAFT no deben incluirse.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 05 Events / administración y visibilidad.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "by-artist"
+              ],
+              "query": [
+                {
+                  "key": "stageName",
+                  "value": "{{artistStageName}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/events/by-artist?stageName={{artistStageName}}"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "05 Events / administración y visibilidad (6 rutas)"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-E2E-20 — Comprar ticket (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"userEmail\": \"{{userAEmail}}\",\r\n  \"eventCode\": \"{{newEventCode}}\",\r\n  \"type\": \"GENERAL\"\r\n}\r\n"
+            },
+            "description": "ID: TC-E2E-20\n\nObjetivo: Comprar un ticket para un evento publicado y verificar que la compra se registre correctamente a nombre de USER_A.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, USER_A está registrado y dispone de un JWT vigente. El evento E2E-EVENT-20261018-01 se encuentra en estado PUBLISHED y tiene capacidad disponible.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{newEventCode}} y type=GENERAL. Pulsar Send.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido, que incluya un ticketCode no vacío, status=PAID, type=GENERAL, userEmail correspondiente a USER_A y eventCode=E2E-EVENT-20261018-01. Verificar que el precio sea el correspondiente al tipo de ticket y guardar el código generado para las consultas posteriores.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-21 — Consultar ticket por código (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-21\n\nObjetivo: Consultar un ticket existente mediante su código y verificar que los datos de la compra correspondan al usuario autenticado.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, USER_A dispone de un JWT vigente y existe el ticket comprado mediante TC-E2E-20, cuyo código está almacenado en la variable ticketCode.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketCode}} y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido y que el ticketCode coincida con el registrado durante la compra. Verificar que userEmail corresponda a USER_A, eventCode sea E2E-EVENT-20261018-01, type=GENERAL, status=PAID y price=100000.00. Comprobar que no se expongan datos sensibles.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-22 — Listar tickets del usuario (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-22\n\nObjetivo: Consultar los tickets asociados a USER_A y verificar que la compra realizada anteriormente aparezca correctamente en su historial.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, USER_A dispone de un JWT vigente y existe el ticket comprado mediante TC-E2E-20.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/by-user?email={{userAEmail}} y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido con la lista de tickets pertenecientes a USER_A. Verificar que aparezca el ticket registrado en TC-E2E-20, que ticketCode coincida con la variable almacenada, userEmail corresponda a USER_A, eventCode sea E2E-EVENT-20261018-01, type=GENERAL y status=PAID. Comprobar que no se expongan datos sensibles.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "by-user"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{userAEmail}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/tickets/by-user?email={{userAEmail}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-23 — Consultar tickets pagados del evento (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-23\n\nObjetivo: Consultar los tickets pagados de newEventCode usando el rol operativo STAFF.\n\nPrecondiciones: newEventCode está publicado, hay al menos un ticket elegible y staffToken es vigente.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar GET /api/events/{{newEventCode}}/tickets/paid.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que aparecen los tickets elegibles pagados y que no se mezclan tickets cancelados o usados si el contrato los excluye. Verificar que un USER sin privilegios recibe 403 en los casos negativos.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-24 — Cancelar ticket (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-24\n\nObjetivo: Cancelar un ticket pagado perteneciente a USER_A y comprobar la transición de estado.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, USER_A tiene un JWT vigente y existe un ticket propio en estado PAID, identificado mediante ticketCode. El evento todavía no ha ocurrido.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketCode}}/cancel y pulsar Send. No enviar Body.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta sea un JSON válido, que el ticketCode corresponda al ticket comprado en TC-E2E-20 y que su estado cambie de PAID a CANCELLED. Consultar nuevamente el ticket por código para verificar que el cambio persiste.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCode}}",
+                "cancel"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCode}}/cancel"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Comprar ticket independiente para TC-E2E-25",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{publishedEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: PREP-TICKETCODEFORUSE\n\nObjetivo: Crear un ticket PAID independiente para TC-E2E-25 — marcar como usado y verificar persistencia.\n\nPrecondiciones: USER_A está registrado y activo; userAToken es vigente; publishedEventCode identifica un evento publicado con capacidad disponible.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{publishedEventCode}} y type=GENERAL.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Copiar el ticketCode de la respuesta a la variable local ticketCodeForUse. Confirmar que el ticket sea distinto de los códigos utilizados por los otros escenarios y que su estado inicial sea elegible. No reutilizar el ticket en otras operaciones irreversibles.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-E2E-25 — Marcar ticket como usado (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-E2E-25\n\nObjetivo: Marcar como usado un ticket pagado e independiente usando el rol operativo STAFF.\n\nPrecondiciones: ticketCodeForUse contiene el código de una compra independiente en estado elegible; staffToken es vigente. No usar ticketCode ni ticketUsableCode en este caso.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketCodeForUse}}/use.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta refleja la transición permitida a USED. Ejecutar después la solicitud de verificación de persistencia y confirmar que el estado se mantiene. No reutilizar este ticket en otros escenarios irreversibles.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCodeForUse}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCodeForUse}}/use"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Verificar persistencia del ticket usado (TC-E2E-25)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-TICKET-USE-VERIFY\n\nObjetivo: Verificar la persistencia del estado USED después de TC-E2E-25.\n\nPrecondiciones: TC-E2E-25 se ejecutó correctamente y ticketCodeForUse identifica el ticket usado; userAToken está vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketCodeForUse}} después de TC-E2E-25.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el mismo ticket continúa en estado USED y que propietario/código coinciden con la compra original.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCodeForUse}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCodeForUse}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Comprar ticket independiente para TC-SEC-012 y TC-BIZ-012/013/017",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{publishedEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: PREP-TICKETUSABLECODE\n\nObjetivo: Crear un ticket PAID independiente para TC-SEC-012 y el flujo de negocio TC-BIZ-012/013/017.\n\nPrecondiciones: USER_A está registrado y activo; userAToken es vigente; publishedEventCode identifica un evento publicado con capacidad disponible.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{publishedEventCode}} y type=GENERAL.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Copiar el ticketCode de la respuesta a la variable local ticketUsableCode. Confirmar que el ticket sea distinto de los códigos utilizados por los otros escenarios y que su estado inicial sea elegible. No reutilizar el ticket en otras operaciones irreversibles.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Comprar ticket independiente para TC-SEC-014",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{publishedEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: PREP-TICKETSTAFFUSECODE\n\nObjetivo: Crear un ticket PAID independiente para TC-SEC-014 — transición válida a USED por STAFF.\n\nPrecondiciones: USER_A está registrado y activo; userAToken es vigente; publishedEventCode identifica un evento publicado con capacidad disponible.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{publishedEventCode}} y type=GENERAL.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Copiar el ticketCode de la respuesta a la variable local ticketStaffUseCode. Confirmar que el ticket sea distinto de los códigos utilizados por los otros escenarios y que su estado inicial sea elegible. No reutilizar el ticket en otras operaciones irreversibles.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Comprar ticket independiente para TC-SEC-009/011",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{publishedEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: PREP-TICKETCANCELABLECODE\n\nObjetivo: Crear un ticket PAID independiente para las pruebas de propiedad TC-SEC-009 y TC-SEC-011.\n\nPrecondiciones: USER_A está registrado y activo; userAToken es vigente; publishedEventCode identifica un evento publicado con capacidad disponible.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{publishedEventCode}} y type=GENERAL.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Copiar el ticketCode devuelto a ticketCancelableCode. Confirmar que su estado inicial sea PAID y que no sea el ticketCode usado en TC-E2E-24. Mantenerlo sin mutaciones hasta completar TC-SEC-011B.\n\nEvidencia: Registrar HTTP y observaciones en registro-ejecucion-manual.md, sección 06 Tickets / compra, consulta y ciclo de vida. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "06 Tickets / compra, consulta y ciclo de vida (6 rutas base + preparación)"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-AUTH-007 — Ruta protegida sin token",
+          "request": {
+            "description": "**ID:** TC-AUTH-007 — Ruta protegida sin token (ANONYMOUS)\n\n**Objetivo:** Verificar que la API rechace el acceso a un recurso protegido cuando la solicitud no contiene un token JWT de autenticación.\n\n**Precondiciones:** Aplicación PulsePass en ejecución y endpoint `/api/auth/me` disponible.\n\n**Actor:** ANONYMOUS.\n\n**Autorización:** No Auth. No enviar encabezado Authorization.\n\n**Ejecución:** Enviar GET `/api/auth/me` sin token de autenticación y pulsar Send.\n\n**HTTP esperado:** 401 Unauthorized.\n\n**Revisión manual:** Confirmar que la API devuelve un JSON válido con estructura ErrorResponse, código 401 y mensaje de autenticación requerida. Verificar que no se expongan datos personales, contraseñas, tokens ni información interna del servidor.\n\n**Evidencia:** Registrar el resultado en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-008 — {{vault:bearer_token_1clj}} o malformado (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{malformedBearerSample}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-008 — {{vault:bearer_token_1clj}} o malformado (ANONYMOUS)\n\n**Objetivo:** Verificar que la API rechace solicitudes a recursos protegidos cuando se utiliza un token {{vault:bearer_token_0x1w}} o malformado.\n\n**Precondiciones:** Aplicación PulsePass en ejecución y endpoint `/api/auth/me` disponible.\n\n**Actor:** ANONYMOUS.\n\n**Autorización:** Bearer Token usando la variable local `{{malformedBearerSample}}`, cuyo valor ficticio es `invalid`. No usar ni pegar JWT real en esta prueba.\n\n**Ejecución:** Seleccionar el environment `PulsePass-local`, comprobar que `malformedBearerSample` tenga el valor ficticio `invalid`, configurar la autorización Bearer con esa variable y enviar GET `/api/auth/me` pulsando Send.\n\n**HTTP esperado:** 401 Unauthorized.\n\n**Revisión manual:** Confirmar que la API rechace el valor inválido y devuelva un JSON con estructura ErrorResponse y código HTTP 401. Verificar que no se exponga información interna del servidor, datos personales ni credenciales.\n\n**Evidencia:** Registrar el HTTP observado, el resultado y las observaciones en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-009 — JWT alterado (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{tamperedToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-AUTH-009\n\nObjetivo: Verificar que PulsePass rechace un JWT cuya firma fue alterada manualmente.\n\nPrecondiciones: USER_A tiene un JWT vigente en userAToken. Copiarlo localmente a tamperedToken y modificar manualmente un carácter de la firma antes de enviar. No guardar el JWT real en la colección ni exportarlo.\n\nActor: ANONYMOUS con token manipulado.\n\nAutorización: Bearer {{tamperedToken}}.\n\nEjecución: Preparar tamperedToken manualmente y enviar GET /api/auth/me.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar ErrorResponse con status 401, sin acceso a la identidad, sin detalles internos y sin HTTP 500.\n\nEvidencia: Registrar el resultado y la observación en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. Nunca copiar el token a la bitácora.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-010 — JWT expirado",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{expiredToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-010 — JWT expirado (ANONYMOUS)\n\n**Objetivo:** Verificar que PulsePass rechace un JWT cuya fecha de expiración haya sido superada, impidiendo el acceso a recursos protegidos.\n\n**Precondiciones:** Aplicación PulsePass en ejecución, USER_A registrado y activo, y un JWT auténtico generado previamente cuyo tiempo de vigencia de 900 segundos haya transcurrido.\n\n**Actor:** ANONYMOUS (JWT expirado).\n\n**Autorización:** Bearer {{expiredToken}}.\n\n**Ejecución:** Iniciar sesión con USER_A, guardar una copia del JWT en la variable local expiredToken, esperar hasta que supere su fecha de expiración y enviar GET `/api/auth/me` utilizando dicho token.\n\n**HTTP esperado:** 401 Unauthorized.\n\n**Revisión manual:** Confirmar que la API rechace el JWT expirado y devuelva un ErrorResponse JSON con código 401. Verificar que no se permita acceder a la identidad del usuario, que no se expongan datos sensibles y que no se produzca un error HTTP 500.\n\n**Evidencia:** Registrar el HTTP observado, el resultado y las observaciones en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-011 — JWT firmado por otra clave",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{foreignToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-011 — JWT firmado por otra clave / issuer distinto\n\n**Objetivo:** Verificar que PulsePass rechace un JWT firmado con una clave distinta de la configurada en el servidor, aunque tenga una estructura válida y no haya expirado.\n\n**Precondiciones:** Aplicación PulsePass en ejecución. JWT de prueba generado offline mediante HS256, con clave exclusiva de pruebas, claims válidos y tiempo de expiración futuro.\n\n**Actor:** ANONYMOUS (token firmado por una clave no confiable).\n\n**Autorización:** Bearer `{{foreignToken}}`.\n\n**Ejecución:** Generar offline un JWT firmado con una clave de prueba diferente de la utilizada por PulsePass. Guardarlo en la variable local `foreignToken` y enviarlo como Bearer Token al endpoint protegido.\n\n**HTTP esperado:** 401 Unauthorized.\n\n**Revisión manual:** Confirmar que PulsePass rechace el JWT y devuelva un ErrorResponse JSON con código 401. Verificar que no se permita acceder a la identidad del usuario, que no se expongan detalles de la clave de firma y que no se produzca un error HTTP 500.\n\n**Evidencia:** Registrar el código HTTP, la respuesta JSON y el resultado de la prueba en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-012 — Token por query string en lugar de Bearer",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-AUTH-012\n\nObjetivo: Confirmar que un JWT enviado solo como parámetro access_token no autentica una ruta protegida.\n\nPrecondiciones: USER_A tiene un JWT vigente en userAToken.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth. No enviar encabezado Authorization.\n\nEjecución: Enviar GET /api/auth/me?access_token={{userAToken}} sin Bearer Token.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar que el servidor ignore el JWT de query string y devuelva ErrorResponse 401 sin exponer datos de USER_A.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "acces_token",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/auth/me?access_token={{userAToken}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-013 — Usuario inactivo con token previo",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{inactiveUserToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-013 — Usuario inactivo con token previo\n\n**Objetivo:** Verificar que PulsePass impida el acceso a un usuario desactivado, aunque presente un JWT obtenido previamente mientras su cuenta estaba activa.\n\n**Precondiciones:** Aplicación PulsePass en ejecución. Usuario de prueba `e2e_inactive_01` registrado inicialmente con `active=true`, inicio de sesión exitoso y JWT vigente almacenado en la variable `inactiveUserToken`. Cuenta desactivada posteriormente en la base de datos con `active=false`, sin modificar el JWT.\n\n**Actor:** INACTIVE_USER.\n\n**Autorización:** Bearer `{{inactiveUserToken}}`.\n\n**Ejecución:** Registrar e iniciar sesión con INACTIVE_USER mientras su cuenta está activa. Guardar el JWT obtenido y comprobar que permite consultar `/api/auth/me`. Desactivar posteriormente la cuenta en la base de datos E2E y repetir la petición utilizando exactamente el mismo token, antes de su expiración.\n\n**HTTP esperado:** 401 Unauthorized.\n\n**Revisión manual:** Confirmar que el JWT permite consultar la identidad mientras la cuenta está activa y que, después de desactivarla, PulsePass rechaza el acceso. Verificar que la respuesta sea un ErrorResponse JSON con código 401 y que no se expongan datos sensibles.\n\n**Evidencia:** Registrar la preparación del usuario, la comprobación de identidad previa, la desactivación de la cuenta y la respuesta HTTP de la prueba en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-014 — Token de USER para endpoint ADMIN",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-014 — Token de USER para endpoint ADMIN\n\n**Objetivo:** Verificar que PulsePass impida a un usuario con rol USER acceder a una operación reservada para usuarios con permisos STAFF o ADMIN.\n\n**Precondiciones:** Aplicación PulsePass en ejecución, USER_A registrado y activo, JWT vigente almacenado en `userAToken` y evento de prueba existente identificado por `newEventCode`.\n\n**Actor:** USER_A.\n\n**Autorización:** Bearer `{{userAToken}}`.\n\n**Ejecución:** Enviar una petición GET al endpoint de consulta de tickets pagados del evento utilizando el JWT de USER_A, que cuenta únicamente con el rol USER.\n\n**HTTP esperado:** 403 Forbidden.\n\n**Revisión manual:** Comprobar que PulsePass reconozca la autenticación del usuario, pero rechace la operación por permisos insuficientes. Verificar que devuelva un ErrorResponse JSON con código 403, sin exponer información de los tickets.\n\n**Evidencia:** Registrar el código HTTP, la respuesta JSON y el resultado de la validación en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-AUTH-015 — JWT inválido en endpoint público",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{foreignToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "**ID:** TC-AUTH-015 — JWT inválido en endpoint público\n\n**Objetivo:** Verificar que PulsePass nunca autentique un JWT inválido enviado a un endpoint público y que aplique la política de seguridad definida para tokens inválidos presentes.\n\n**Precondiciones:** Aplicación PulsePass en ejecución, endpoint público de venues activos disponible y JWT de prueba firmado con una clave no confiable almacenado en `foreignToken`.\n\n**Actor:** ANONYMOUS (Bearer inválido presente).\n\n**Autorización:** Bearer `{{foreignToken}}`.\n\n**Ejecución:** Enviar una petición GET al endpoint público de venues activos incluyendo un JWT inválido en el encabezado Authorization mediante Bearer Token.\n\n**HTTP esperado:** Según la política de seguridad configurada para tokens inválidos en endpoints públicos. El JWT no debe ser autenticado como una identidad válida.\n\n**Revisión manual:** Comprobar que PulsePass no acepte el JWT como credencial válida. Verificar la respuesta HTTP y su coherencia con la política de seguridad implementada. Si devuelve 401 Unauthorized, confirmar que el ErrorResponse JSON tenga una estructura correcta y no exponga información sensible.\n\n**Evidencia:** Registrar el código HTTP, la respuesta JSON, la política aplicada y el resultado de la validación en `registro-ejecucion-manual.md`, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "venues",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/venues/active"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-001 — Crear evento (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"eventCode\": \"{{newEventCode}}\",\r\n  \"name\": \"PulsePass E2E {{runId}}\",\r\n  \"description\": \"Evento de prueba manual\",\r\n  \"category\": \"MUSIC\",\r\n  \"eventDate\": \"2027-02-15T19:00:00\",\r\n  \"minimumAge\": 0,\r\n  \"venueCode\": \"{{venueActiveCode}}\"\r\n}\r\n"
+            },
+            "description": "ID: TC-SEC-001 — Crear evento (ANONYMOUS)\n\nObjetivo: Comprobar que una solicitud anónima no pueda crear eventos.\n\nPrecondiciones: API disponible, venue activo y código de prueba único; la petición no incluye JWT.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/events con un cuerpo de evento válido y eventCode de prueba.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar ErrorResponse y que la solicitud no produzca cambios observables. No atribuir una consulta de base de datos si no se ejecutó.\n\nEvidencia: Registrar el HTTP observado, el resultado de la validación y las observaciones en registro-ejecucion-manual.md. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-001 — Crear evento (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "\r\n{\r\n  \"eventCode\": \"{{newEventCode}}\",\r\n  \"name\": \"PulsePass E2E {{runId}}\",\r\n  \"description\": \"Evento de prueba manual\",\r\n  \"category\": \"MUSIC\",\r\n  \"eventDate\": \"2027-02-15T19:00:00\",\r\n  \"minimumAge\": 0,\r\n  \"venueCode\": \"{{venueActiveCode}}\"\r\n}\r\n"
+            },
+            "description": "ID: TC-SEC-001 — Crear evento (USER_A)\n\nObjetivo: Comprobar que USER_A no pueda crear eventos.\n\nPrecondiciones: USER_A registrado, activo y con JWT vigente; eventCode de prueba único.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/events con un cuerpo de evento válido y eventCode de prueba.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse y que la solicitud no produzca cambios observables. La comprobación de base de datos solo se reporta si se ejecutó.\n\nEvidencia: Registrar el HTTP observado, el resultado de la validación y las observaciones en registro-ejecucion-manual.md. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-002 — Publicar evento (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-002 — Publicar evento (USER_A)\n\nObjetivo: Verificar que USER_A no pueda publicar eventos.\n\nPrecondiciones: Existe un evento de prueba y USER_A tiene JWT vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar PATCH /api/events/{{newEventCode}}/publish.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse. Después consultar el evento como ADMIN y comprobar que conserva el estado previo.\n\nEvidencia: Registrar el HTTP observado, el resultado de la validación y las observaciones en registro-ejecucion-manual.md. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "publish"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/publish"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-002 — Publicar evento (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-002 — Publicar evento (STAFF)\n\nObjetivo: Verificar que STAFF no pueda publicar eventos si la operación está reservada a ADMIN.\n\nPrecondiciones: Existe un evento de prueba y STAFF tiene JWT vigente.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar PATCH /api/events/{{newEventCode}}/publish.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse. Después consultar el evento como ADMIN y comprobar que conserva el estado previo.\n\nEvidencia: Registrar el HTTP observado, el resultado de la validación y las observaciones en registro-ejecucion-manual.md. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "publish"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/publish"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-003 — Asociar artista (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-003 — Asociar artista (USER_A)\n\nObjetivo: Verificar que USER_A no pueda asociar artistas a eventos.\n\nPrecondiciones: Existe un evento de prueba y artistId identifica un artista existente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/events/{{newEventCode}}/artists/{{artistId}}.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse y consultar el evento como ADMIN después del intento para comprobar que la lista de artistas no cambió.\n\nEvidencia: Registrar el HTTP observado, el resultado de la validación y las observaciones en registro-ejecucion-manual.md. No incluir contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}",
+                "artists",
+                "{{artistId}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}/artists/{{artistId}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-003B — Verificar evento tras mutaciones denegadas (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-003B\n\nObjetivo: Verificar que los intentos no autorizados de crear/publicar/asociar eventos no hayan alterado el evento de prueba.\n\nPrecondiciones: TC-SEC-001, TC-SEC-002 (USER_A y STAFF) y TC-SEC-003 se ejecutaron y devolvieron la denegación esperada; newEventCode identifica el evento publicado.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar GET /api/events/{{newEventCode}} después de las pruebas negativas anteriores.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que status siga PUBLISHED, que los datos del evento coincidan con el registro inicial y que la asociación de artistas no haya cambiado de forma no autorizada. Si la solicitud negativa cambió el evento, registrar FAIL.\n\nEvidencia: Registrar HTTP, estado observado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{newEventCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{newEventCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Crear evento DRAFT (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"eventCode\": \"{{draftEventCode}}\",\n  \"name\": \"PulsePass SEC draft {{runId}}\",\n  \"description\": \"Evento borrador para pruebas de seguridad\",\n  \"category\": \"MUSIC\",\n  \"eventDate\": \"2027-12-15T19:00:00\",\n  \"minimumAge\": 0,\n  \"venueCode\": \"{{venueActiveCode}}\"\n}"
+            },
+            "description": "ID: PREP-SEC-DRAFT\n\nObjetivo: Crear un evento válido que permanezca en estado DRAFT para probar su confidencialidad pública.\n\nPrecondiciones: Venue activo, código draftEventCode único y token vigente de ADMIN.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events con el cuerpo JSON definido y no ejecutar la publicación.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Confirmar que eventCode coincide con draftEventCode y status sea DRAFT. Copiar el código devuelto a la variable draftEventCode si se asignó manualmente. Comprobar que el JSON tenga el contrato ErrorResponse cuando corresponda (timestamp, status, error, message y details), sin secretos ni stack traces.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Asociar artista al DRAFT (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-SEC-DRAFT-ARTIST\n\nObjetivo: Asociar un artista activo al evento DRAFT para comprobar que los listados públicos lo excluyen.\n\nPrecondiciones: El evento draftEventCode existe en DRAFT, artistId identifica un artista activo y ADMIN dispone de token vigente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events/{{draftEventCode}}/artists/{{artistId}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la asociación se realiza sin publicar el evento. El estado debe continuar en DRAFT. Comprobar que el JSON tenga el contrato ErrorResponse cuando corresponda (timestamp, status, error, message y details), sin secretos ni stack traces.\n\nEvidencia: Registrar el HTTP observado, la validación y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{draftEventCode}}",
+                "artists",
+                "{{artistId}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{draftEventCode}}/artists/{{artistId}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-004 — Consultar DRAFT por código (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-SEC-004\n\nObjetivo: Verificar que una consulta pública por código no exponga un evento DRAFT.\n\nPrecondiciones: draftEventCode existe en estado DRAFT y no se envía token.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/events/{{draftEventCode}}.\n\nHTTP esperado: 403 Forbidden, conforme a la política de acceso seleccionada para esta entrega.\n\nRevisión manual: Confirmar ErrorResponse con status 403 y que no se expongan los datos del borrador. Si se observa 404, registrar FAIL y revisar la política de Fase 4 antes de cambiar el esperado.\n\nEvidencia: Registrar HTTP observado, validación JSON y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{draftEventCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{draftEventCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-005 — Buscar eventos de artista con DRAFT (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-SEC-005\n\nObjetivo: Confirmar que el JSON no incluya draftEventCode; los eventos devueltos deben ser públicos.\n\nPrecondiciones: El evento DRAFT con el artista asociado existe y el artista está activo.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/events/by-artist?stageName={{artistStageName}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el JSON no incluya draftEventCode; los eventos devueltos deben ser públicos.\n\nEvidencia: Registrar el HTTP observado, la validación JSON y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "by-artist"
+              ],
+              "query": [
+                {
+                  "key": "stageName",
+                  "value": "{{artistStageName}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/events/by-artist?stageName={{artistStageName}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-006 — Consultar USER_A por email como USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-006\n\nObjetivo: Verificar que USER_B no pueda consultar por email información personal de USER_A.\n\nPrecondiciones: USER_A y USER_B están registrados; userBToken es un JWT vigente de USER_B y userAEmail contiene el email de USER_A.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar GET /api/users/by-email?email={{userAEmail}} con el token de USER_B.\n\nHTTP esperado: 403 Forbidden, conforme a la política seleccionada para recursos ajenos.\n\nRevisión manual: Confirmar ErrorResponse 403 y que no se devuelva información personal de USER_A. Si la API devuelve 404, registrar FAIL y revisar la política acordada; no aceptar ambos códigos indistintamente.\n\nEvidencia: Registrar HTTP observado, validación JSON y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni datos personales innecesarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "by-email"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{userAEmail}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/users/by-email?email={{userAEmail}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-007 — Consultar USER_A por username como USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-007\n\nObjetivo: Verificar que USER_B no pueda consultar por username información personal de USER_A.\n\nPrecondiciones: USER_A y USER_B están registrados y ambos tokens son vigentes.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar GET /api/users/by-username?username={{userAUsername}} con token de USER_B.\n\nHTTP esperado: 403 Forbidden, conforme a la política seleccionada para recursos ajenos.\n\nRevisión manual: Confirmar que no se expone información personal de USER_A. Si se observa 404, registrar FAIL y revisar formalmente la política; no aceptar ambos códigos de manera indistinta.\n\nEvidencia: Registrar HTTP, validación JSON y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "by-username"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{userAUsername}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/users/by-username?username={{userAUsername}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-008 — Comprar ticket usando email de USER_B (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userBEmail}}\",\n  \"eventCode\": \"{{publishedEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: TC-SEC-008\n\nObjetivo: Confirmar que USER_A no pueda comprar un ticket indicando el email de USER_B y que no se cree una entrada para USER_B.\n\nPrecondiciones: USER_A y USER_B están registrados; publishedEventCode identifica un evento publicado elegible; ambos tokens son vigentes.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userBEmail}}, eventCode={{publishedEventCode}} y type=GENERAL.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse 403 y ausencia de ticket nuevo para USER_B mediante la solicitud PREP — Verificar integridad de TC-SEC-008 (USER_B). No aceptar una compra creada.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PREP — Verificar integridad de TC-SEC-008 (USER_B)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: PREP-SEC-008-INTEGRITY\n\nObjetivo: Verificar que el intento rechazado de TC-SEC-008 no haya generado un ticket a nombre de USER_B.\n\nPrecondiciones: TC-SEC-008 ya devolvió 403 Forbidden; USER_B tiene JWT vigente y userBEmail contiene su correo.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar GET /api/tickets/by-user?email={{userBEmail}}.\n\nHTTP esperado: 200 OK para la consulta del propio historial de USER_B, conforme al contrato de TC-E2E-22.\n\nRevisión manual: Revisar el listado y comprobar que no se haya añadido un ticket del evento {{publishedEventCode}} a raíz del intento de TC-SEC-008. Si hay un ticket de ese evento, revisar su fecha de compra y contrastar con el estado previo; no asumir que fue creado por este intento solo por coincidir el evento. Si la API no permite la consulta propia, realizar la verificación autorizada equivalente sin alterar datos.\n\nEvidencia: Registrar HTTP y conclusión en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No registrar tokens ni datos personales innecesarios.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "by-user"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{userBEmail}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/tickets/by-user?email={{userBEmail}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-009 — Leer ticket de USER_A como USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-009\n\nObjetivo: Verificar que USER_B no pueda consultar el ticket de USER_A.\n\nPrecondiciones: ticketCancelableCode pertenece a USER_A y USER_B tiene token vigente. Este ticket se prepara en la carpeta 06 y se reserva para escenarios de propiedad.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketCancelableCode}} con el token de USER_B.\n\nHTTP esperado: 403 Forbidden, conforme a la política seleccionada para recursos ajenos.\n\nRevisión manual: Confirmar que no se expongan datos del ticket. Si se observa 404, registrar FAIL y revisar la política antes de cambiar el esperado.\n\nEvidencia: Registrar HTTP, validación JSON y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-010 — Listar tickets de USER_A como USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-010\n\nObjetivo: No debe devolver tickets ni datos de USER_A.\n\nPrecondiciones: USER_A y USER_B existen y ambos tokens son vigentes.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar GET /api/tickets/by-user?email={{userAEmail}} con token de USER_B.\n\nHTTP esperado: 403 Forbidden (política elegida).\n\nRevisión manual: No debe devolver tickets ni datos de USER_A.\n\nEvidencia: Registrar el HTTP observado, la validación JSON y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "by-user"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{userAEmail}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/tickets/by-user?email={{userAEmail}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-011 — Cancelar ticket de USER_A como USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-011\n\nObjetivo: Verificar que USER_B no pueda cancelar el ticket de USER_A.\n\nPrecondiciones: ticketCancelableCode es un ticket PAID de USER_A preparado para seguridad; USER_B tiene token vigente.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketCancelableCode}}/cancel con el token de USER_B. Después ejecutar TC-SEC-011B para comprobar el estado con USER_A.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar la denegación y no aceptar cambios de estado. La lectura posterior autorizada debe mostrar que el ticket continúa PAID.\n\nEvidencia: Registrar HTTP, validación JSON y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}",
+                "cancel"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}/cancel"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-011B — Verificar ticket tras cancelación denegada (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-011B\n\nObjetivo: Verificar con el propietario que TC-SEC-011 no cambió el estado del ticket ajeno.\n\nPrecondiciones: TC-SEC-011 se ejecutó y devolvió 403; ticketCancelableCode pertenece a USER_A y estaba PAID antes del intento.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketCancelableCode}} inmediatamente después de TC-SEC-011.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el ticket sigue PAID y que propietario/código son los originales. Si cambió a CANCELLED o cualquier otro estado, registrar FAIL.\n\nEvidencia: Registrar HTTP observado, estado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-012 — Marcar ticket de USER_A como usado por USER_B",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userBToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-012\n\nObjetivo: Después consultar el ticket como USER_A o ADMIN y confirmar que el estado no cambió.\n\nPrecondiciones: ticketUsableCode es un ticket PAID de USER_A, independiente del usado en cancelación.\n\nActor: USER_B.\n\nAutorización: Bearer {{userBToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketUsableCode}}/use con token de USER_B.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Después consultar el ticket como USER_A o ADMIN y confirmar que el estado no cambió.\n\nEvidencia: Registrar el HTTP observado, la validación JSON y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketUsableCode}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-012B — Verificar ticket tras uso denegado (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-012B\n\nObjetivo: Verificar con el propietario que TC-SEC-012 no cambió el estado del ticket tras el intento de uso por USER_B.\n\nPrecondiciones: TC-SEC-012 se ejecutó y devolvió 403; ticketUsableCode pertenece a USER_A y estaba PAID antes del intento.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketUsableCode}} inmediatamente después de TC-SEC-012 y antes de TC-BIZ-012.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el ticket continúa PAID. Si el estado cambió, registrar FAIL.\n\nEvidencia: Registrar HTTP observado, estado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketUsableCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketUsableCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-013 — Consultar tickets pagados con USER_A",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-013\n\nObjetivo: Confirmar ErrorResponse sin lista de tickets ni datos de compradores.\n\nPrecondiciones: Existe evento publicado y USER_A tiene token vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/events/{{publishedEventCode}}/tickets/paid.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse sin lista de tickets ni datos de compradores.\n\nEvidencia: Registrar el HTTP observado, la validación JSON y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{publishedEventCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-014 — Marcar ticket elegible como usado (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-014\n\nObjetivo: Confirmar que STAFF puede marcar como USED un ticket elegible con una operación autorizada.\n\nPrecondiciones: ticketStaffUseCode contiene un ticket PAID independiente reservado exclusivamente para esta prueba; staffToken es vigente.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketStaffUseCode}}/use.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar la transición a USED y consultar después el mismo ticket para comprobar persistencia. No reutilizarlo en TC-BIZ-012 ni en TC-E2E-25.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketStaffUseCode}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketStaffUseCode}}/use"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-015 — ADMIN consulta borrador",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-015\n\nObjetivo: Confirmar que ADMIN puede consultar el borrador y que status sea DRAFT.\n\nPrecondiciones: Existe draftEventCode en DRAFT y ADMIN dispone de token vigente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar GET /api/events/{{draftEventCode}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que ADMIN puede consultar el borrador y que status sea DRAFT.\n\nEvidencia: Registrar el HTTP observado, la validación JSON y las observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{draftEventCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{draftEventCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-016 — Intentar registrar usuario con role=ADMIN",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"username\": \"e2e_role_injection_{{runId}}\",\n  \"email\": \"e2e.role.injection.{{runId}}@example.test\",\n  \"password\": \"{{userAPassword}}\",\n  \"firstName\": \"Usuario\",\n  \"lastName\": \"Prueba Escalacion\",\n  \"city\": \"Santa Marta\",\n  \"birthDate\": \"1995-05-10\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "description": "ID: TC-SEC-016\n\nObjetivo: Comprobar que enviar role=ADMIN en el registro público no eleva los privilegios de la cuenta.\n\nPrecondiciones: runId es único; userAPassword está configurado localmente. El registro público debe asignar solo ROLE_USER.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/users con username=e2e_role_injection_{{runId}}, email=e2e.role.injection.{{runId}}@example.test y role=ADMIN. Si responde 201, continuar con TC-SEC-016B y TC-SEC-016C. Si responde 400, registrar ese resultado y marcar los pasos posteriores BLOCKED porque no se creó la cuenta.\n\nHTTP esperado: 201 Created o 400 Bad Request según el DTO; nunca debe concederse ADMIN.\n\nRevisión manual: No basta con que role no aparezca en la respuesta. La cuenta nueva debe ser incapaz de acceder al endpoint restringido de tickets pagados.\n\nEvidencia: Registrar HTTP, resultado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir contraseña ni JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-016B — Login de usuario con role=ADMIN inyectado",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"identifier\": \"e2e_role_injection_{{runId}}\",\n  \"password\": \"{{userAPassword}}\"\n}"
+            },
+            "description": "ID: TC-SEC-016B\n\nObjetivo: Obtener la identidad autenticada creada por TC-SEC-016 para verificar que el intento de asignar ADMIN no le concedió privilegios.\n\nPrecondiciones: TC-SEC-016 devolvió 201 Created y la cuenta e2e_role_injection_{{runId}} existe. Si TC-SEC-016 devolvió 400, no ejecutar este caso; marcar BLOCKED.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/auth/login con identifier=e2e_role_injection_{{runId}} y password={{userAPassword}}. Copiar manualmente accessToken a roleEscalationToken.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar token no vacío y expiración esperada. No registrar el JWT en la bitácora ni exportarlo.\n\nEvidencia: Registrar HTTP y resultado en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/api/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-016C — Usuario con role=ADMIN inyectado intenta ver tickets pagados",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{roleEscalationToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-016C\n\nObjetivo: Verificar mediante una ruta privilegiada que la cuenta creada en TC-SEC-016 no obtuvo ADMIN.\n\nPrecondiciones: TC-SEC-016 devolvió 201 y TC-SEC-016B permitió iniciar sesión. roleEscalationToken contiene el JWT copiado manualmente. publishedEventCode identifica un evento válido.\n\nActor: Usuario recién registrado (debe conservar ROLE_USER).\n\nAutorización: Bearer {{roleEscalationToken}}.\n\nEjecución: Enviar GET /api/events/{{publishedEventCode}}/tickets/paid con roleEscalationToken.\n\nHTTP esperado: 403 Forbidden.\n\nRevisión manual: Confirmar ErrorResponse 403 y que no se devuelva ningún ticket ni dato protegido. Si devuelve 200, registrar FAIL por posible escalamiento de privilegios. Si los pasos previos no pudieron ejecutarse, marcar BLOCKED.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir el JWT.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{publishedEventCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-SEC-017 — Verificar revocación de privilegio con JWT previo",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-SEC-017\n\nObjetivo: Verificar si el privilegio STAFF deja de ser efectivo al revocar el rol, aun utilizando el JWT obtenido antes del cambio.\n\nPrecondiciones: Se conserva el JWT previo en staffToken y el rol STAFF se revocó mediante un mecanismo administrativo de prueba autorizado. El PRD no define un endpoint público para revocar roles; si no puede prepararse el cambio de forma controlada, marcar BLOCKED.\n\nActor: Cuenta STAFF con JWT previo a la revocación.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Después de revocar el rol, enviar GET /api/events/{{publishedEventCode}}/tickets/paid con el mismo JWT, sin iniciar sesión de nuevo.\n\nHTTP esperado: 403 Forbidden si la aplicación vuelve a evaluar el rol actual. Si el token mantiene privilegios por diseño hasta expirar, documentar el comportamiento y no marcar PASS sin justificarlo frente al contrato.\n\nRevisión manual: Confirmar que no se entregan tickets ni datos protegidos después de la revocación. No usar /api/auth/me como única prueba porque solo puede devolver la identidad.\n\nEvidencia: Registrar HTTP, resultado, método de revocación y observaciones en registro-ejecucion-manual.md, sección 07 Seguridad / escenarios negativos. No incluir JWT ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{publishedEventCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "07 Seguridad / escenarios negativos"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-HTTP-001 — Crear evento sin campos obligatorios",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"name\": \"Evento incompleto\"\n}"
+            },
+            "description": "ID: TC-HTTP-001\n\nObjetivo: Confirmar ErrorResponse y que no se cree evento.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ADMIN / USER_A.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST {{baseUrl}}/api/events con los datos configurados.\n\nHTTP esperado: 400 Bad Request.\n\nRevisión manual: Confirmar ErrorResponse y que no se cree evento.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-002 — Crear evento con JSON malformado",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\"eventCode\": \"E2E-HTTP-BAD\","
+            },
+            "description": "ID: TC-HTTP-002\n\nObjetivo: Confirmar que el servidor rechaza el JSON y no devuelve 500.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ADMIN / USER_A.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST {{baseUrl}}/api/events con los datos configurados.\n\nHTTP esperado: 400 Bad Request.\n\nRevisión manual: Confirmar que el servidor rechaza el JSON y no devuelve 500.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-003 — Crear evento con categoría inválida",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"eventCode\": \"E2E-HTTP-ENUM\",\n  \"name\": \"Evento enum inválido\",\n  \"description\": \"Prueba HTTP\",\n  \"category\": \"NOT_A_CATEGORY\",\n  \"eventDate\": \"2027-12-15T19:00:00\",\n  \"minimumAge\": 0,\n  \"venueCode\": \"{{venueActiveCode}}\"\n}"
+            },
+            "description": "ID: TC-HTTP-003\n\nObjetivo: Confirmar que el enum inválido se rechaza y no se crea evento.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ADMIN / USER_A.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST {{baseUrl}}/api/events con los datos configurados.\n\nHTTP esperado: 400 Bad Request.\n\nRevisión manual: Confirmar que el enum inválido se rechaza y no se crea evento.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-004 — Consultar evento inexistente",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-HTTP-004\n\nObjetivo: Confirmar ErrorResponse y que no se exponga información interna.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET {{baseUrl}}/api/events/E2E-HTTP-NOT-FOUND con los datos configurados.\n\nHTTP esperado: 404 Not Found.\n\nRevisión manual: Confirmar ErrorResponse y que no se exponga información interna.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "E2E-HTTP-NOT-FOUND"
+              ],
+              "raw": "{{baseUrl}}/api/events/E2E-HTTP-NOT-FOUND"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-005 — Registrar usuario con email mal formado",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"username\": \"e2e_http_email_bad\",\n  \"email\": \"no-es-correo\",\n  \"password\": \"{{userAPassword}}\",\n  \"firstName\": \"HTTP\",\n  \"lastName\": \"Email inválido\",\n  \"city\": \"Santa Marta\",\n  \"birthDate\": \"1995-05-10\"\n}"
+            },
+            "description": "ID: TC-HTTP-005\n\nObjetivo: Confirmar que la validación rechaza el email y no se crea usuario.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST {{baseUrl}}/api/users con los datos configurados.\n\nHTTP esperado: 400 Bad Request.\n\nRevisión manual: Confirmar que la validación rechaza el email y no se crea usuario.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-006 — Registrar usuario duplicado",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"username\": \"{{userAUsername}}\",\n  \"email\": \"{{userAEmail}}\",\n  \"password\": \"{{userAPassword}}\",\n  \"firstName\": \"Usuario\",\n  \"lastName\": \"Duplicado\",\n  \"city\": \"Santa Marta\",\n  \"birthDate\": \"1995-05-10\"\n}"
+            },
+            "description": "ID: TC-HTTP-006\n\nObjetivo: Usar una cuenta que ya exista. Confirmar conflicto por duplicidad y que no se crea una segunda cuenta.\n\nPrecondiciones: USER_A ya está registrado; el ambiente seleccionado apunta a la base E2E.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST {{baseUrl}}/api/users con los datos configurados.\n\nHTTP esperado: 409 Conflict.\n\nRevisión manual: Usar una cuenta que ya exista. Confirmar conflicto por duplicidad y que no se crea una segunda cuenta.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-007 — Consultar ticket inexistente",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-HTTP-007\n\nObjetivo: Confirmar ErrorResponse sin datos de otro ticket.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ADMIN / USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET {{baseUrl}}/api/tickets/TKT-E2E-NOT-FOUND con los datos configurados.\n\nHTTP esperado: 404 Not Found.\n\nRevisión manual: Confirmar ErrorResponse sin datos de otro ticket.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "TKT-E2E-NOT-FOUND"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/TKT-E2E-NOT-FOUND"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-HTTP-008 — Ruta protegida sin token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-HTTP-008\n\nObjetivo: Confirmar ErrorResponse, status 401 y ausencia de datos de identidad.\n\nPrecondiciones: API disponible, ambiente PulsePass-local seleccionado y token de ADMIN o USER_A válido cuando la ruta lo requiere.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET {{baseUrl}}/api/auth/me con los datos configurados.\n\nHTTP esperado: 401 Unauthorized.\n\nRevisión manual: Confirmar ErrorResponse, status 401 y ausencia de datos de identidad.\n\nEvidencia: Registrar el HTTP observado, el JSON y la observación en registro-ejecucion-manual.md, sección 08 Validaciones y errores HTTP. No registrar contraseñas ni tokens.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "raw": "{{baseUrl}}/api/auth/me"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "08 Validaciones y errores HTTP"
+    },
+    {
+      "item": [
+        {
+          "name": "TC-BIZ-001 — Descubrimiento público de venues",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-BIZ-001\n\nObjetivo: Confirmar que el venue consultado existe y sus datos coinciden con el fixture.\n\nPrecondiciones: La API está disponible y existe al menos un venue activo.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\n**Ejecución: Enviar GET /api/venues/active y después consultar un código real con GET /api/venues/{{venueActiveCode}}.**\n\nHTTP esperado: 200 OK en ambas consultas.\n\nRevisión manual: Confirmar que el venue consultado existe y sus datos coinciden con el fixture.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "venues",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/venues/active"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-002 — Descubrimiento público de artistas",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-BIZ-002\n\nObjetivo: Confirmar que ID y nombre artístico corresponden al mismo artista activo.\n\nPrecondiciones: Existe al menos un artista activo.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar GET /api/artists/active; identificar artistId y stageName; consultar GET /api/artists/{{artistId}} y GET /api/artists/by-stage-name?stageName={{artistStageName}}.\n\nHTTP esperado: 200 OK en las consultas válidas.\n\nRevisión manual: Confirmar que ID y nombre artístico corresponden al mismo artista activo.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "artists",
+                "active"
+              ],
+              "raw": "{{baseUrl}}/api/artists/active"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-003 — Crear evento válido (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"eventCode\": \"{{eventToPublishCode}}\",\n  \"name\": \"PulsePass BIZ {{runId}}\",\n  \"description\": \"Evento para flujo de negocio manual\",\n  \"category\": \"MUSIC\",\n  \"eventDate\": \"2027-12-15T19:00:00\",\n  \"minimumAge\": 0,\n  \"venueCode\": \"{{venueActiveCode}}\"\n}"
+            },
+            "description": "ID: TC-BIZ-003\n\nObjetivo: Confirmar código, datos y estado inicial DRAFT; el código queda disponible para los siguientes casos.\n\nPrecondiciones: Venue activo, eventToPublishCode único y token ADMIN vigente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events con el cuerpo JSON configurado.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Confirmar código, datos y estado inicial DRAFT; el código queda disponible para los siguientes casos.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-004 — Publicar evento (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-004\n\nObjetivo: Confirmar status PUBLISHED y que el evento aparezca en GET /api/events/published.\n\nPrecondiciones: El evento eventToPublishCode existe en DRAFT.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar PATCH /api/events/{{eventToPublishCode}}/publish.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar status PUBLISHED y que el evento aparezca en GET /api/events/published.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventToPublishCode}}",
+                "publish"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{eventToPublishCode}}/publish"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-005 — Asociar artista a evento (ADMIN)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-005\n\nObjetivo: Confirmar que el artista quede asociado y que la consulta por artista incluya el evento si está publicado.\n\nPrecondiciones: El evento eventToPublishCode existe y el artista artistId está activo. Si el servicio solo permite asociar en DRAFT, ejecutar la asociación antes de TC-BIZ-004.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events/{{eventToPublishCode}}/artists/{{artistId}} siguiendo la precondición de estado exigida por el servicio.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que el artista quede asociado y que la consulta por artista incluya el evento si está publicado.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventToPublishCode}}",
+                "artists",
+                "{{artistId}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{eventToPublishCode}}/artists/{{artistId}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-006 — Registrar USER_A y USER_B",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"username\": \"{{userAUsername}}\",\n  \"email\": \"{{userAEmail}}\",\n  \"password\": \"{{userAPassword}}\",\n  \"firstName\": \"Usuario\",\n  \"lastName\": \"Prueba A\",\n  \"city\": \"Santa Marta\",\n  \"birthDate\": \"1995-05-10\"\n}"
+            },
+            "description": "ID: TC-BIZ-006\n\nObjetivo: Confirmar dos identidades distintas con rol USER, sin campos de contraseña en la respuesta. Si ya existen, registrar el resultado previo y no crear duplicados.\n\nPrecondiciones: Variables de USER_A y USER_B configuradas; cada identidad es única en la base E2E. Ejecutar el mismo registro para USER_B usando sus variables.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth.\n\nEjecución: Enviar POST /api/users para USER_A y repetir con USER_B.\n\nHTTP esperado: 201 Created para cada registro nuevo; 409 Conflict en un duplicado deliberado.\n\nRevisión manual: Confirmar dos identidades distintas con rol USER, sin campos de contraseña en la respuesta. Si ya existen, registrar el resultado previo y no crear duplicados.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "raw": "{{baseUrl}}/api/users"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-007 — Comprar ticket de evento publicado (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{eventToPublishCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: TC-BIZ-007\n\nObjetivo: Guardar ticketCode devuelto en ticketCancelableCode o ticketCode según el caso; confirmar propietario y evento.\n\nPrecondiciones: El evento eventToPublishCode está PUBLISHED y tiene capacidad; USER_A tiene token vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail, eventCode y type=GENERAL.\n\nHTTP esperado: 201 Created.\n\nRevisión manual: Guardar ticketCode devuelto en ticketCancelableCode o ticketCode según el caso; confirmar propietario y evento.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-008 — Consultar ticket por código y propietario (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-008\n\nObjetivo: Confirmar código, userEmail de USER_A, eventCode correcto y estado actual del ticket.\n\nPrecondiciones: ticketCancelableCode pertenece a USER_A.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar GET /api/tickets/{{ticketCancelableCode}}.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar código, userEmail de USER_A, eventCode correcto y estado actual del ticket.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-009 — Listar tickets pagados (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-009\n\nObjetivo: Confirmar que se incluyan tickets elegibles pagados y que no se mezclen estados cancelados o usados si el contrato los excluye.\n\nPrecondiciones: Existe el evento y STAFF tiene token vigente.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar GET /api/events/{{eventToPublishCode}}/tickets/paid.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que se incluyan tickets elegibles pagados y que no se mezclen estados cancelados o usados si el contrato los excluye.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventToPublishCode}}",
+                "tickets",
+                "paid"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{eventToPublishCode}}/tickets/paid"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-010 — Cancelar ticket elegible por propietario (USER_A)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-010\n\nObjetivo: Consultar el ticket de nuevo y confirmar estado CANCELLED.\n\nPrecondiciones: ticketCancelableCode pertenece a USER_A y se encuentra PAID; reservarlo para cancelación, no usarlo después.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketCancelableCode}}/cancel.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Consultar el ticket de nuevo y confirmar estado CANCELLED.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}",
+                "cancel"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}/cancel"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-011 — Cancelar el mismo ticket por segunda vez",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-011\n\nObjetivo: Confirmar que el estado permanece CANCELLED y no ocurre una segunda mutación.\n\nPrecondiciones: El caso TC-BIZ-010 se ejecutó y ticketCancelableCode está CANCELLED.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketCancelableCode}}/cancel nuevamente.\n\nHTTP esperado: 409 Conflict o respuesta de transición inválida definida por el Service.\n\nRevisión manual: Confirmar que el estado permanece CANCELLED y no ocurre una segunda mutación.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketCancelableCode}}",
+                "cancel"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}/cancel"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-012 — Marcar otro ticket como usado (STAFF)",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-012\n\nObjetivo: Consultar el ticket y confirmar estado USED.\n\nPrecondiciones: ticketUsableCode es un ticket PAID elegible distinto de ticketCancelableCode.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketUsableCode}}/use.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Consultar el ticket y confirmar estado USED.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketUsableCode}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-013 — Marcar usado por segunda vez",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{staffToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-013\n\nObjetivo: Confirmar que el ticket sigue USED y no ocurre una transición adicional.\n\nPrecondiciones: TC-BIZ-012 se ejecutó y ticketUsableCode ya está USED.\n\nActor: STAFF.\n\nAutorización: Bearer {{staffToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketUsableCode}}/use otra vez.\n\nHTTP esperado: 409 Conflict o respuesta de transición inválida definida por el Service.\n\nRevisión manual: Confirmar que el ticket sigue USED y no ocurre una transición adicional.\n\nEvidencia: Registrar el HTTP observado, el resultado de negocio y las observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketUsableCode}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-014 — Compra no elegible",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{draftEventCode}}\",\n  \"type\": \"GENERAL\"\n}"
+            },
+            "description": "ID: TC-BIZ-014\n\nObjetivo: Comprobar que no se crea un ticket cuando el evento no es elegible. Este request cubre el evento DRAFT; los escenarios de aforo agotado y edad insuficiente deben prepararse por separado.\n\nPrecondiciones: draftEventCode existe y permanece en estado DRAFT; USER_A tiene JWT vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar POST /api/tickets con userEmail={{userAEmail}}, eventCode={{draftEventCode}} y type=GENERAL.\n\nHTTP esperado: Error de negocio definido por el contrato; nunca 201 Created.\n\nRevisión manual: Confirmar ErrorResponse y que no se persista ningún ticket. Ejecutar los subcasos de aforo y edad solo si sus fixtures están preparados; si no, marcarlos BLOCKED.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ],
+              "raw": "{{baseUrl}}/api/tickets"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-015 — Rechazar evento con categoría inválida",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{adminToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"eventCode\": \"E2E-BIZ-INVALID-{{runId}}\",\n  \"name\": \"Evento inválido {{runId}}\",\n  \"description\": \"Prueba negativa de categoría\",\n  \"category\": \"INVALID_CATEGORY\",\n  \"eventDate\": \"2027-12-15T19:00:00\",\n  \"minimumAge\": 0,\n  \"venueCode\": \"{{venueActiveCode}}\"\n}"
+            },
+            "description": "ID: TC-BIZ-015\n\nObjetivo: Comprobar que la API rechaza datos de evento inválidos y no crea un recurso inválido.\n\nPrecondiciones: ADMIN dispone de adminToken vigente y venueActiveCode identifica un venue activo. El código E2E-BIZ-INVALID-{{runId}} no debe existir previamente.\n\nActor: ADMIN.\n\nAutorización: Bearer {{adminToken}}.\n\nEjecución: Enviar POST /api/events con category=INVALID_CATEGORY y el resto de campos válidos.\n\nHTTP esperado: 400 Bad Request.\n\nRevisión manual: Confirmar ErrorResponse con status 400 y que el evento no se haya creado. No aceptar HTTP 500. Para código inexistente, ejecutar TC-HTTP-004 por separado.\n\nEvidencia: Registrar HTTP observado, resultado y observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "raw": "{{baseUrl}}/api/events"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-016 — Consultar evento publicado por código (ANONYMOUS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "ID: TC-BIZ-016\n\nObjetivo: Verificar el paso 5 del flujo C del PRD: después de publicar un evento, consultar su detalle sin enviar Bearer Token y confirmar que sea accesible públicamente.\n\nPrecondiciones: La API está iniciada, el ambiente PulsePass-local está seleccionado, eventToPublishCode identifica un evento en estado PUBLISHED y el evento se publicó previamente mediante el flujo de catálogo.\n\nActor: ANONYMOUS.\n\nAutorización: No Auth. No enviar encabezado Authorization.\n\nEjecución: Enviar GET /api/events/{{eventToPublishCode}} y pulsar Send.\n\nHTTP esperado: 200 OK.\n\nRevisión manual: Confirmar que la respuesta JSON corresponda a eventToPublishCode, que status sea PUBLISHED y que no se requiera JWT.\n\nEvidencia: Registrar el HTTP observado, el resultado y las observaciones en la bitácora, sección 09 Flujos de negocio / secuencia recomendada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventToPublishCode}}"
+              ],
+              "raw": "{{baseUrl}}/api/events/{{eventToPublishCode}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-BIZ-017 — USER_A intenta marcar su ticket como usado",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{userAToken}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "description": "ID: TC-BIZ-017\n\nObjetivo: Verificar que USER_A no puede marcar como USED su propio ticket, incluso cuando el ticket está en estado USED tras la operación válida realizada por STAFF.\n\nPrecondiciones: ticketUsableCode pertenece a USER_A y está en estado USED después de TC-SEC-014/TC-BIZ-012; USER_A tiene token vigente.\n\nActor: USER_A.\n\nAutorización: Bearer {{userAToken}}.\n\nEjecución: Enviar PATCH /api/tickets/{{ticketUsableCode}}/use.\n\nHTTP esperado: 403 Forbidden, de acuerdo con el flujo D del PRD, donde USER_A intenta marcar el ticket como usado y la operación es denegada.\n\nRevisión manual: Confirmar que la operación es denegada y que el ticket continúa en estado USED al consultarlo con TC-BIZ-008.\n\nEvidencia: Registrar HTTP observado, respuesta JSON y observaciones en registro-ejecucion-manual.md, sección 09 Flujos de negocio / secuencia recomendada. No incluir tokens ni contraseñas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketUsableCode}}",
+                "use"
+              ],
+              "raw": "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "09 Flujos de negocio / secuencia recomendada"
+    }
+  ]
+}
