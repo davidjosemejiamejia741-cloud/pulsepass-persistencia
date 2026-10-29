@@ -93,6 +93,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> unauthenticated(Exception e){
+        return response(HttpStatus.UNAUTHORIZED,"Credenciales inválidas o autenticación requerida",Map.of());
+    }
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> denied(Exception e){
+        log.info("security_denied status=403 requestId={}",org.slf4j.MDC.get("requestId"));
+        return response(HttpStatus.FORBIDDEN,"No tiene permisos para realizar esta operación",Map.of());
+    }
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> integrity(Exception e){return response(HttpStatus.CONFLICT,"Conflicto de datos",Map.of());}
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unexpected(Exception exception) {
         // Conserva los códigos y headers de los errores de Spring MVC.

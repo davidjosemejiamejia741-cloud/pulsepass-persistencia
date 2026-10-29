@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("@authorizationService.email(#email, true)")
     public UserResponse findByEmail(String email) {
         User user = userRepository
                 .findByEmailIgnoreCase(email)
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("@authorizationService.username(#username)")
     public UserResponse findByUsername(String username) {
         User user = userRepository
                 .findByUsername(username)

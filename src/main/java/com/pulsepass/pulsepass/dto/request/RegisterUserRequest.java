@@ -33,7 +33,10 @@ public record RegisterUserRequest(
         String city,
 
         @NotNull(message = "Birth date is required")
-        LocalDate birthDate
+        LocalDate birthDate,
+
+        @com.pulsepass.pulsepass.security.ValidPassword String password
 
 ) {
+    @Override public String toString(){return "RegisterUserRequest[REDACTED]";}
 }

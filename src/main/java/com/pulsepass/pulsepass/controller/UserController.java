@@ -18,14 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService service;
+    private final com.pulsepass.pulsepass.service.AuthService auth;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, com.pulsepass.pulsepass.service.AuthService auth) {
         this.service = service;
+        this.auth=auth;
     }
 
     @PostMapping
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.register(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(auth.register(request));
     }
 
     @GetMapping("/by-email")

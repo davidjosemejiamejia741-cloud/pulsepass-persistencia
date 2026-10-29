@@ -44,6 +44,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public EventResponse create(CreateEventRequest request) {
 
         if (eventRepository.existsByEventCode(request.eventCode())) {
@@ -102,6 +103,7 @@ public class EventServiceImpl implements EventService {
     public EventResponse findByCode(String eventCode) {
 
         Event event = findEventByCode(eventCode);
+        if(event.getStatus()!=EventStatus.PUBLISHED && !com.pulsepass.pulsepass.service.AuthorizationService.privileged()) throw new ResourceNotFoundException("Event not found");
 
         return eventMapper.toResponse(event);
     }
@@ -119,6 +121,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public EventResponse publish(String eventCode) {
 
         Event event = findEventByCode(eventCode);
@@ -150,6 +153,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public EventResponse addArtist(
             String eventCode,
             Long artistId
@@ -192,7 +196,7 @@ public class EventServiceImpl implements EventService {
     ) {
 
         List<Event> events =
-                eventRepository.findEventsByArtist(stageName);
+                eventRepository.findEventsByArtist(stageName).stream().filter(e -> e.getStatus()==EventStatus.PUBLISHED || com.pulsepass.pulsepass.service.AuthorizationService.privileged()).toList();
 
         return eventMapper.toSummaryResponseList(events);
     }
