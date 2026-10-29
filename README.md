@@ -1,41 +1,36 @@
 # PulsePass
 
-MVP académico de persistencia para gestionar venues, eventos, artistas, usuarios, perfiles y tickets. Está construido con Java 21, Spring Boot, JPA, PostgreSQL y Flyway.
+## Endpoints principales
 
-## Modelo
+| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/venues/{code}` | Consultar venue por código |
+| `GET` | `/api/venues/active` | Listar venues activos |
+| `POST` | `/api/events` | Crear evento |
+| `GET` | `/api/events/{eventCode}` | Consultar evento por código |
+| `GET` | `/api/events/published` | Listar eventos publicados |
+| `PATCH` | `/api/events/{eventCode}/publish` | Publicar evento |
+| `POST` | `/api/events/{eventCode}/artists/{artistId}` | Asociar artista a un evento |
+| `GET` | `/api/events/by-artist?stageName={stageName}` | Buscar eventos por artista |
+| `GET` | `/api/artists/{id}` | Consultar artista por ID |
+| `GET` | `/api/artists/by-stage-name?stageName={stageName}` | Consultar artista por nombre artístico |
+| `GET` | `/api/artists/active` | Listar artistas activos |
+| `POST` | `/api/users` | Registrar usuario |
+| `GET` | `/api/users/by-email?email={email}` | Consultar usuario por email |
+| `GET` | `/api/users/by-username?username={username}` | Consultar usuario por username |
+| `POST` | `/api/tickets` | Comprar ticket |
+| `GET` | `/api/tickets/{ticketCode}` | Consultar ticket por código |
+| `GET` | `/api/tickets/by-user?email={email}` | Listar tickets de un usuario |
+| `GET` | `/api/events/{eventCode}/tickets/paid` | Listar tickets pagados de un evento |
+| `PATCH` | `/api/tickets/{ticketCode}/cancel` | Cancelar ticket |
+| `PATCH` | `/api/tickets/{ticketCode}/use` | Marcar ticket como usado |
 
-- `Venue` 1:N `Event`.
-- `Event` N:M `Artist`, mediante `event_artists`.
-- `User` 1:1 `UserProfile`.
-- `User` 1:N `Ticket` y `Event` 1:N `Ticket`.
+## Ejecutar las pruebas
 
-Los enums se almacenan por nombre (`EnumType.STRING`). Los identificadores de negocio son únicos y PostgreSQL valida capacidad positiva, precio no negativo y los valores permitidos para enums.
-
-## Migraciones
-
-Flyway administra el esquema desde `src/main/resources/db/migration`:
-
-1. `V1__create_schema.sql`: tablas, claves, relaciones y constraints básicos.
-2. `V2__insert_initial_artists.sql`: artistas de referencia.
-3. `V3__add_streaming_url_to_event.sql`: URL de streaming opcional.
-4. `V4__add_enum_constraints_and_indexes.sql`: constraints para enums e índices de claves foráneas.
-
-No se deben modificar migraciones ya aplicadas; los cambios estructurales se agregan en una nueva versión.
-
-## Consultas
-
-Los repositories incluyen Query Methods para búsquedas simples (por código, email, estado y relaciones) y JPQL para búsquedas por artista, ciudad, recomendaciones y conteo de tickets pagados.
-
-## Ejecutar
-
-Para arrancar la aplicación se requiere PostgreSQL, configurable mediante `DB_URL`, `DB_USER` y `DB_PASSWORD`.
-
-```bash
-./mvnw spring-boot:run
-```
-
-Las pruebas de integración utilizan PostgreSQL mediante Testcontainers; se necesita Docker disponible:
+Desde la raíz del proyecto, ejecuta:
 
 ```bash
 ./mvnw clean test
 ```
+
+Las pruebas de persistencia usan Testcontainers y requieren que Docker esté instalado y en ejecución.
